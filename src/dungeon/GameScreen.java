@@ -3,9 +3,16 @@ package dungeon;
 import processing.core.*;
 
 /**
- * Created by ls99 on 17/10/2016.
+ * Created by ls99
  */
 public class GameScreen extends PApplet {
+
+    protected int sWidth = Constants.WIDTH;
+    protected int sHeight = Constants.HEIGHT;
+    protected int tileSize = Constants.TILE;
+    protected int SCALE = Constants.SCALE;
+
+    private Game game;
 
     static public void main(String[] passedArgs) {
 
@@ -20,11 +27,14 @@ public class GameScreen extends PApplet {
     }
 
     public void settings() {
-        size(1200, 700);
+        size(sWidth*SCALE, sHeight*SCALE);
     }
 
     public void setup() {
-        background(0);
+        background(121, 76, 19);
+
+        game = new Game(this);
+
     }
 
     public void draw() {

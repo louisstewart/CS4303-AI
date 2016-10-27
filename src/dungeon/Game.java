@@ -13,7 +13,7 @@ public class Game {
 
     public Game(PApplet p) {
         this.p = p;
-        this.level = new Level(1);
+        this.level = new Level(1,p);
     }
 
 }
