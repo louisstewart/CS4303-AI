@@ -1,5 +1,6 @@
 package dungeon;
 
+import dungeon.dungeon.level.Level;
 import processing.core.PApplet;
 
 /**
@@ -8,9 +9,11 @@ import processing.core.PApplet;
 public class Game {
 
     PApplet p;
+    Level level;
 
     public Game(PApplet p) {
         this.p = p;
+        this.level = new Level(1);
     }
 
 }
