@@ -7,10 +7,11 @@ import processing.core.*;
  */
 public class GameScreen extends PApplet {
 
-    protected int sWidth = Constants.WIDTH;
-    protected int sHeight = Constants.HEIGHT;
-    protected int tileSize = Constants.TILE;
-    protected int SCALE = Constants.SCALE;
+    protected int sWidth = Helpers.WIDTH;
+    protected int sHeight = Helpers.HEIGHT;
+    protected int tileSize = Helpers.TILE;
+    protected int SCALE = Helpers.SCALE;
+    private int PANEL_HEIGHT = 50;
 
     private Game game;
 
@@ -27,7 +28,7 @@ public class GameScreen extends PApplet {
     }
 
     public void settings() {
-        size(sWidth*SCALE, sHeight*SCALE);
+        size(sWidth*SCALE, sHeight*SCALE+PANEL_HEIGHT);
     }
 
     public void setup() {
@@ -39,9 +40,6 @@ public class GameScreen extends PApplet {
 
     public void draw() {
 
-        int d = 20;
-
-        fill(153);
-        rect(100, 200, d, d);
+        game.render();
     }
 }

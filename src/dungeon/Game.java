@@ -16,4 +16,8 @@ public class Game {
         this.level = new Level(1,p);
     }
 
+    public void render() {
+        level.render();
+    }
+
 }
