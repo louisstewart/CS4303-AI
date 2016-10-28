@@ -42,4 +42,8 @@ public class GameScreen extends PApplet {
 
         game.render();
     }
+
+    public void keyPressed() {
+        game.keyPressed();
+    }
 }
