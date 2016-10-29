@@ -6,10 +6,7 @@ import processing.core.PApplet;
 import processing.core.PVector;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by ls99.
@@ -23,22 +20,20 @@ public class Level {
     private boolean[][] map;
     private PApplet p;
     private Character player;
-    private Random rand;
     private int width = Helpers.WIDTH* Helpers.SCALE/ Helpers.TILE; // Base level width.
     private int height = Helpers.HEIGHT* Helpers.SCALE/ Helpers.TILE; // Base level height.
-    private int MAX_ROOMS;
 
-    private List<Room> rooms = new LinkedList<Room>();
+
+    private List<Room> rooms = new LinkedList<>();
 
     public Level(int number, PApplet p, Character player) {
         this.number = number;
         this.p = p;
         this.player = player;
-        this.MAX_ROOMS = number+5 > 30 ? 30 : number+5; // Cap at 30 rooms max, min 6.
+
         this.map = new boolean[width][height];
 
-
-        generateLevel();
+        generateLevelPartition();
         populateLevel();
     }
 
@@ -47,7 +42,7 @@ public class Level {
             for (int j = 0; j < map[i].length; j++) {
                 int x = i* Helpers.TILE;
                 int y = j* Helpers.TILE;
-                if(!map[i][j]) {
+                if(map[i][j]) {
                     p.fill(255);
                     p.rect(x, y, Helpers.TILE, Helpers.TILE);
                 }
@@ -63,6 +58,107 @@ public class Level {
         return this.map;
     }
 
+    private void generateLevelPartition() {
+        SPNode root = new SPNode(0, 0, width - 1, height - 1, null);
+        int maxRoom = 20; // Total squares in map = 2560, so largest room roughly 1/10th of that.
+
+        List<SPNode> nodes = new ArrayList<>();
+
+        nodes.add(root);
+
+        boolean split = true;
+
+        while (split) {
+            split = false;
+            for (SPNode l: nodes) {
+                if (l.left == null && l.right == null) {
+                    // if this Leaf is too big.
+                    if (l.width > maxRoom || l.height > maxRoom) {
+                        if (l.split()) {
+                            nodes.add(l.left);
+                            nodes.add(l.right);
+                            nodes.remove(l);
+                            split = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (SPNode n: nodes) {
+            Room r = n.createRoom();
+            createRoom(r);
+            rooms.add(r);
+        }
+        int s = rooms.size();
+        for (int i = 0; i < s; i++) {
+            if(i+1 < s) {
+                Room c = rooms.get(i);
+                Room next = rooms.get(i+1);
+                if(next != null) {
+                    int iX = c.centerX();
+                    int iY = c.centerY();
+                    int jX = next.centerX();
+                    int jY = next.centerY();
+                    createHtunnel(iX, jX, iY);
+                    createVtunnel(iY, jY, jX);
+                }
+            }
+        }
+    }
+
+    /**
+     * Flip the booleans in the map to true to represent a room (rectangle)
+     * @param r - the room object to visualise.
+     */
+    private void createRoom(Room r) {
+        for (int i = r.x; i < r.x2; i++) {
+            for (int j = r.y; j < r.y2; j++) {
+                map[i][j] = true;
+            }
+        }
+    }
+
+    /**
+     * Create a horizontal tunnel segment between 2 locations.
+     * @param x1 - start
+     * @param x2 - end
+     * @param y - height of tunnel
+     */
+    private void createHtunnel(int x1, int x2, int y) {
+        int a = Math.min(x1,x2);
+        int b = Math.max(x1,x2) + 1;
+        for (int i = a; i < b; i++) {
+            map[i][y] = true;
+        }
+    }
+
+    /**
+     * Create vertical tunnel segment.
+     * @param y1 - start
+     * @param y2 - end
+     * @param x - tunnel width
+     */
+    private void createVtunnel(int y1, int y2, int x) {
+        int a = Math.min(y1,y2);
+        int b = Math.max(y1,y2) + 1;
+        for (int i = a; i < b; i++) {
+            map[x][i] = true;
+        }
+    }
+
+    /**
+     * Fill the level up with some content, based on the level number.
+     *
+     * The higher the number, the more goodies and enemies will be placed\
+     * onto the grid.
+     */
+    private void populateLevel() {
+
+
+    }
+
     /**
      * Generate the map using a cellular automata method.
      *
@@ -70,7 +166,7 @@ public class Level {
      * After the map is generated, need to check it with flood fill to make sure
      * that the caves are all connected.
      */
-    private void generateLevel() {
+    private void generateLevelCellular() {
         double r = 0.3; // Chance of being walkable.
         int born = 4; // Birth limit.
         int die = 3; // Death limit.
@@ -116,77 +212,5 @@ public class Level {
      * TODO:  FLOOD FILL LEVEL
      * - need to smooth out the holes in the maps with something.
      */
-
-    /**
-     * Procedurally generate the level using a naive room placer.
-     */
-    private void generateLevelNaive() {
-        int maxRoomSize = 9; // Already adjusted for tile size.
-        int minRoomSize = 2;
-        int numberOfRooms = 0; // Count how many rooms we've placed.
-        // First get a random location for digger to start.
-        rand = new Random(System.currentTimeMillis());
-        for (int i = 0; i < MAX_ROOMS; i++) {
-            int w = (int) (minRoomSize + Math.random()*(maxRoomSize-minRoomSize));
-            int h = (int) (minRoomSize + Math.random()*(maxRoomSize-minRoomSize));
-            int x;
-            int y;
-
-            x = rand.nextInt(width - w - 1);
-            y = rand.nextInt(height - h - 1);
-
-            Room r = new Room(x,y,w,h);
-            createRoom(r);
-
-            if(numberOfRooms == 0) {
-                this.player.position = new PVector(x, y);
-            }
-            else {
-                Room last = rooms.get(numberOfRooms - 1);
-                createHtunnel(last.centerX(), r.centerX(), last.centerY());
-                createVtunnel(last.centerY(), r.centerY(), last.centerX());
-            }
-            rooms.add(r);
-            numberOfRooms++;
-        }
-    }
-
-    private void createRoom(Room r) {
-        int a = Math.min(r.x2,map.length-1); // Clamp values to inside of matrix.
-        for (int i = r.x; i < a; i++) {
-            int b = Math.min(r.x2, map[i].length-1);
-            for (int j = r.y; j < b; j++) {
-                map[i][j] = true;
-            }
-        }
-    }
-
-    private void createHtunnel(int x1, int x2, int y) {
-        int a = Math.min(x1,x2);
-        int b = Math.max(x1,x2) + 1;
-        for (int i = a; i < b; i++) {
-            map[i][y] = true;
-        }
-    }
-
-    private void createVtunnel(int y1, int y2, int x) {
-        int a = Math.min(y1,y2);
-        int b = Math.max(y1,y2) + 1;
-        for (int i = a; i < b; i++) {
-            map[x][i] = true;
-        }
-    }
-
-    /**
-     * Fill the level up with some content, based on the level number.
-     *
-     * The higher the number, the more goodies and enemies will be placed\
-     * onto the grid.
-     */
-    private void populateLevel() {
-
-
-    }
-
 
 }

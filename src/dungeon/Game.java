@@ -16,7 +16,7 @@ public class Game {
 
     public Game(PApplet p) {
         this.p = p;
-        this.player = new Player(p, 0, 0, 0, 0, 0, 0, 10, 10);
+        this.player = new Player(p, 0, 0, 0, 0, 0, 0, 10, 10, 10, 10);
         this.level = new Level(1,p, player);
     }
 

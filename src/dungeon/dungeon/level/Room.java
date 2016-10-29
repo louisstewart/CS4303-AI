@@ -15,8 +15,8 @@ public class Room {
     public Room(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
-        this.x2 = x + width;
-        this.y2 = y + height;
+        this.x2 = x + width -1;
+        this.y2 = y + height -1;
         this.width = width;
         this.height = height;
     }
