@@ -2,6 +2,10 @@ package dungeon;
 
 import processing.core.*;
 
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+
 /**
  * Created by ls99
  */
@@ -12,6 +16,7 @@ public class GameScreen extends PApplet {
     protected int tileSize = Helpers.TILE;
     protected int SCALE = Helpers.SCALE;
     private int PANEL_HEIGHT = 50;
+    Logger logger = Logger.getLogger(GameScreen.class.getName());
 
     private Game game;
 
@@ -28,12 +33,19 @@ public class GameScreen extends PApplet {
     }
 
     public void settings() {
-        size(sWidth*SCALE, sHeight*SCALE+PANEL_HEIGHT);
+        size(sWidth*SCALE, sHeight*SCALE);
     }
 
     public void setup() {
         background(121, 76, 19);
 
+        try {
+            FileHandler fh = new FileHandler("Game.log");
+            logger.addHandler(fh);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         game = new Game(this);
 
     }

@@ -1,11 +1,10 @@
 package dungeon.dungeon.level;
 
 import dungeon.Helpers;
-import dungeon.dungeon.character.Character;
+import dungeon.dungeon.elements.Character;
+import dungeon.dungeon.elements.Player;
 import processing.core.PApplet;
-import processing.core.PVector;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -18,18 +17,15 @@ public class Level {
 
     private int number;
     private boolean[][] map;
-    private PApplet p;
-    private Character player;
+
     private int width = Helpers.WIDTH* Helpers.SCALE/ Helpers.TILE; // Base level width.
     private int height = Helpers.HEIGHT* Helpers.SCALE/ Helpers.TILE; // Base level height.
 
 
     private List<Room> rooms = new LinkedList<>();
 
-    public Level(int number, PApplet p, Character player) {
+    public Level(int number) {
         this.number = number;
-        this.p = p;
-        this.player = player;
 
         this.map = new boolean[width][height];
 
@@ -37,7 +33,7 @@ public class Level {
         populateLevel();
     }
 
-    public void render() {
+    /*public void render() {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 int x = i* Helpers.TILE;
@@ -52,10 +48,15 @@ public class Level {
                 }
             }
         }
-    }
+    }*/
 
     public boolean[][] getMap() {
         return this.map;
+    }
+
+    public void placePlayer(Player player) {
+        player.position.x = this.rooms.get(0).centerX() * Helpers.TILE;
+        player.position.y = this.rooms.get(0).centerY() * Helpers.TILE;
     }
 
     private void generateLevelPartition() {

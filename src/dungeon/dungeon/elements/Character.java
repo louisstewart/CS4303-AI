@@ -1,19 +1,13 @@
-package dungeon.dungeon.character;
+package dungeon.dungeon.elements;
 
-import dungeon.GameScreen;
 import processing.core.*;
 
 /**
- * Created by Louis on 17/10/2016.
+ * Created by ls99
  */
-public abstract class Character {
+public abstract class Character extends Element {
 
-    PApplet p; // The parent application - stores all of the processing methods and variables.
-
-    // Game movement constants
-    protected final float MAX_SPEED = 1f ;
-    protected final float MAX_ACCEL = 0.1f ;
-    protected final float MAX_ROTATION = p.PI/4 ;
+    protected PApplet p; // The parent application - stores all of the processing methods and variables.
 
     // Character Attributes - both NPC and player share these
     private int strength; // Attack stat.
@@ -21,21 +15,14 @@ public abstract class Character {
     private int health;
     private int MAX_HEALTH;
 
-    // Public access for speed - like in example.
-    public PVector position;
-    public float orientation;
-
-    public PVector velocity;
-    public float rotation;
-
     private PVector linear;
 
-    public Character(PApplet p, int x, int y, float or, float xVel, float yVel, float rot, int strength, int dex, int health) {
-        position = new PVector(x, y);
-        orientation = or;
-        velocity = new PVector(xVel, yVel);
-        rotation = rot;
-        linear = new PVector(0, 0);
+    public Character(int strength, int dex, int health) {
+        this.position = new PVector(0, 0);
+        this.orientation = 0;
+        this.velocity = new PVector(0, 0);
+        this.rotation = 0;
+        this.linear = new PVector(0, 0);
         this.strength = strength;
         this.dex = dex;
         this.health = health;
@@ -43,15 +30,15 @@ public abstract class Character {
     }
 
     // update position, orientation, velocity and rotation
-    void integrate(PVector targetPos, float angular) {
+    public void integrate(PVector targetPos, float angular) {
         position.add(velocity);
         // Apply an impulse to bounce off the edge of the screen
         if ((position.x < 0) || (position.x > p.width)) velocity.x = -velocity.x;
         if ((position.y < 0) || (position.y > p.height)) velocity.y = -velocity.y;
 
         orientation += rotation;
-        if (orientation > p.PI) orientation -= 2*p.PI;
-        else if (orientation < -p.PI) orientation += 2*p.PI;
+        if (orientation > PApplet.PI) orientation -= 2*PApplet.PI;
+        else if (orientation < -PApplet.PI) orientation += 2*PApplet.PI;
 
         linear.x = targetPos.x - position.x;
         linear.y = targetPos.y - position.y;
