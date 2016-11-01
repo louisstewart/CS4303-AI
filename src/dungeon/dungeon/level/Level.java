@@ -1,8 +1,8 @@
 package dungeon.dungeon.level;
 
 import dungeon.Helpers;
+import dungeon.dungeon.elements.*;
 import dungeon.dungeon.elements.Character;
-import dungeon.dungeon.elements.Player;
 import processing.core.PApplet;
 
 import java.util.*;
@@ -15,8 +15,9 @@ import java.util.*;
  */
 public class Level {
 
-    private int number;
-    private boolean[][] map;
+    private int levelNumber;
+    private Tile[][] map;
+    private ElementContainer objects;
 
     private int width = Helpers.WIDTH* Helpers.SCALE/ Helpers.TILE; // Base level width.
     private int height = Helpers.HEIGHT* Helpers.SCALE/ Helpers.TILE; // Base level height.
@@ -24,21 +25,24 @@ public class Level {
 
     private List<Room> rooms = new LinkedList<>();
 
-    public Level(int number) {
-        this.number = number;
+    public Level(int number, ElementContainer ec) {
+        this.levelNumber = number;
+        this.objects = ec;
 
-        this.map = new boolean[width][height];
+        this.map = new Tile[width][height];
 
-        generateLevelPartition();
+        /*MapElement me = */generateLevelPartition();
+        //objects.add(me);
+
         populateLevel();
     }
 
-    /*public void render() {
+    public void render(PApplet p) {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 int x = i* Helpers.TILE;
                 int y = j* Helpers.TILE;
-                if(map[i][j]) {
+                if(map[i][j].walkable) {
                     p.fill(255);
                     p.rect(x, y, Helpers.TILE, Helpers.TILE);
                 }
@@ -48,20 +52,28 @@ public class Level {
                 }
             }
         }
-    }*/
+    }
 
-    public boolean[][] getMap() {
+    public Tile[][] getMap() {
         return this.map;
     }
 
     public void placePlayer(Player player) {
-        player.position.x = this.rooms.get(0).centerX() * Helpers.TILE;
-        player.position.y = this.rooms.get(0).centerY() * Helpers.TILE;
+        Room start = rooms.get(0);
+        player.position.x = start.centerX() * (Helpers.TILE/2);
+        player.position.y = start.centerY() * (Helpers.TILE/2);
+        System.out.printf("Room[0].centerX = %d, rooms[0].centerY = %d \n",start.centerX(), start.centerY());
+        System.out.printf("Player at x: %f , y: %f \n", player.position.x, player.position.y);
     }
 
-    private void generateLevelPartition() {
+    private MapElement generateLevelPartition() {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                map[i][j] = new Tile(false);
+            }
+        }
         SPNode root = new SPNode(0, 0, width - 1, height - 1, null);
-        int maxRoom = 20; // Total squares in map = 2560, so largest room roughly 1/10th of that.
+        int maxRoom = 10; // Total squares in map = 2560, so largest room roughly 1/10th of that.
 
         List<SPNode> nodes = new ArrayList<>();
 
@@ -107,6 +119,8 @@ public class Level {
                 }
             }
         }
+        MapElement rtn = new MapElement(map); // Return a displayable object.
+        return rtn;
     }
 
     /**
@@ -116,7 +130,7 @@ public class Level {
     private void createRoom(Room r) {
         for (int i = r.x; i < r.x2; i++) {
             for (int j = r.y; j < r.y2; j++) {
-                map[i][j] = true;
+                map[i][j].walkable = true;
             }
         }
     }
@@ -131,7 +145,7 @@ public class Level {
         int a = Math.min(x1,x2);
         int b = Math.max(x1,x2) + 1;
         for (int i = a; i < b; i++) {
-            map[i][y] = true;
+            map[i][y].walkable = true;
         }
     }
 
@@ -145,7 +159,7 @@ public class Level {
         int a = Math.min(y1,y2);
         int b = Math.max(y1,y2) + 1;
         for (int i = a; i < b; i++) {
-            map[x][i] = true;
+            map[x][i].walkable = true;
         }
     }
 
@@ -156,8 +170,19 @@ public class Level {
      * onto the grid.
      */
     private void populateLevel() {
+        // First put in the exit node.
+        ExitNode e = null;
+        // Select a random room that is not the same room as the player spawns in.
+        int room = (int)(1 + Math.random() * (rooms.size() - 1));
+        Room r = rooms.get(room);
+        int exitX = r.centerX() * Helpers.TILE; // Put in the center of the room.
+        int exitY = r.centerY() * Helpers.TILE;
+        exitX = exitX + Helpers.TILE/2;
+        exitY = exitY + Helpers.TILE/2;
+        e = new ExitNode(null, exitX, exitY);
+        objects.exit = e; // Add it to the scene to be rendered.
 
-
+        int numMonsters = levelNumber < 5 ? 5 : levelNumber; // Some amount of monsters.
     }
 
     /**
@@ -177,13 +202,13 @@ public class Level {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if(Math.random() < r) {
-                    map[i][j] = true;
+                    map[i][j].walkable = true;
                 }
             }
         }
 
         for (int i = 0; i < n; i++) {
-            boolean[][] nMap = new boolean[width][height];
+            Tile[][] nMap = new Tile[width][height];
             for (int row = 0; row < width; row++) {
                 for (int col = 0; col < height; col++) {
                     int alive = 0;
@@ -194,14 +219,14 @@ public class Level {
                             if (l == 0 && m == 0) continue;
 
                             if( nX < 0 || nX >= width || nY < 0 || nY >= height ) alive++;
-                            else if (map[nX][nY]) alive++;
+                            else if (map[nX][nY].walkable) alive++;
                         }
                     }
-                    if(map[row][col]) {
-                        nMap[row][col] = alive >= die;
+                    if(map[row][col].walkable) {
+                        nMap[row][col].walkable = alive >= die;
                     }
                     else {
-                        nMap[row][col] = alive >= born;
+                        nMap[row][col].walkable = alive >= born;
                     }
                 }
             }

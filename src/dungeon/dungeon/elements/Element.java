@@ -14,6 +14,7 @@ public abstract class Element {
     protected final float MAX_ROTATION = PApplet.PI/4 ;
 
     // Public access for speed - like in example.
+    public  boolean movable;
     public PVector position = new PVector(0,0);
     public float orientation = 0f;
 
@@ -23,4 +24,6 @@ public abstract class Element {
     public float scaleX = 1f, scaleY = 1f;
 
     public abstract void render(PApplet p);
+
+    public void integrate(PApplet p) {}
 }

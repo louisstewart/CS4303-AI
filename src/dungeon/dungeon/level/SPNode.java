@@ -14,7 +14,7 @@ public class SPNode {
     public SPNode left = null;
     public SPNode right = null;
 
-    private final int MIN_LEAF_SIZE = 10;
+    private final int MIN_LEAF_SIZE = 8; // 32 tiles wide map, 15 tiles high.
     private Room r = null;
 
 
@@ -70,49 +70,6 @@ public class SPNode {
         int roomY = (int)(y1 + Math.random() * (y2 - y1 - roomHeight -1));
         r =  new Room(roomX, roomY, roomWidth, roomHeight);
         return r;
-
     }
 
-    public void createHalls() {
-        if(left != null && right != null) {
-            Room l = left.getRoom();
-            Room r = right.getRoom();
-
-            int iX = (int)(l.x + Math.random() * (l.x2 - l.x));
-            int iY = (int)(l.y + Math.random() * (l.y2 - l.y));
-            int jX = (int)(r.x + Math.random() * (r.x2 - r.x));
-            int jY = (int)(r.y + Math.random() * (r.y2 - r.y));
-
-            int w = jX - iX;
-            int h = jY - iY;
-
-
-        }
-    }
-
-    public Room getRoom() {
-        if (r != null) {
-            return r;
-        }
-        else {
-            Room lRoom = null;
-            Room rRoom = null;
-            if (left != null) {
-                lRoom = left.getRoom();
-            }
-            if (right != null) {
-                rRoom = right.getRoom();
-            }
-            if (lRoom == null && rRoom == null)
-                return null;
-            else if (rRoom == null)
-                return lRoom;
-            else if (lRoom == null)
-                return rRoom;
-            else if (Math.random() > 0.5)
-                return lRoom;
-            else
-                return rRoom;
-        }
-    }
 }

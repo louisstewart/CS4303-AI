@@ -51,11 +51,15 @@ public class GameScreen extends PApplet {
     }
 
     public void draw() {
-
+        game.tick();
         game.render();
     }
 
     public void keyPressed() {
         game.keyPressed();
+    }
+
+    public void keyReleased() {
+        game.keyReleased();
     }
 }

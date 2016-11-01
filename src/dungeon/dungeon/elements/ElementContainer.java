@@ -10,14 +10,17 @@ import java.util.List;
  */
 public class ElementContainer extends Element {
 
-    private List<Element> elems = new ArrayList<>();
+    public List<Character> monsters = new ArrayList<>();
+    public List<Item> items = new ArrayList<>();
+    public Player player;
+    public ExitNode exit;
 
-    public void add(Element child) {
-        elems.add(child);
-    }
 
-    public void remove(Element child) {
-        elems.remove(child);
+    public void integrate(PApplet p) {
+        player.integrate(p);
+        for (Element el: monsters) {
+            el.integrate(p);
+        }
     }
 
     @Override
@@ -26,9 +29,15 @@ public class ElementContainer extends Element {
         p.translate(this.position.x, this.position.y);
         p.rotate(rotation);
         p.scale(scaleX, scaleY);
-        for (Element el : elems) {
+        // Render immovables first.
+        exit.render(p);
+        for (Item i: items) {
+            i.render(p);
+        }
+        for (Element el : monsters) {
             el.render(p);
         }
+        player.render(p); // Render player last.
         p.popMatrix();
     }
 }

@@ -6,7 +6,7 @@ package dungeon;
 public class Helpers {
     public static final int WIDTH = 256;
     public static final int HEIGHT = 160;
-    public static final int TILE = 16;
+    public static final int TILE = 32;
     public static final int SCALE = 4;
 
     public static float clamp(float x, float min, float max) {
