@@ -4,6 +4,7 @@ import dungeon.dungeon.GameState;
 import dungeon.dungeon.display.Camera;
 import dungeon.dungeon.elements.Element;
 import dungeon.dungeon.elements.ElementContainer;
+import dungeon.dungeon.elements.Monster;
 import dungeon.dungeon.elements.Player;
 import dungeon.dungeon.level.Level;
 import dungeon.dungeon.level.Tile;
@@ -25,7 +26,7 @@ public class Game {
     public Game(PApplet p) {
         this.p = p;
         this.objects = new ElementContainer();
-        this.camera = new Camera(p);
+        //this.camera = new Camera(p);
         this.player = new Player(10, 10, 10, 10);
         this.level = new Level(1, objects);
         //this.map = new MapElement(level);
@@ -41,6 +42,7 @@ public class Game {
     }
 
     public void tick() {
+        if(state == GameState.levelOver) System.out.println("Hit marker");
         detectCollisions(); // Detect all the collisions.
         objects.integrate(p);
     }
@@ -79,7 +81,7 @@ public class Game {
                     player.moveDown();
                     break;
             }
-            player.print();
+            //player.print();
         }
         else switch (p.key) {
             case '1':
@@ -88,7 +90,6 @@ public class Game {
                 level.placePlayer(player);
                 objects.player = player;
                 break;
-
         }
     }
 
@@ -96,26 +97,28 @@ public class Game {
         Tile[][] map = level.getMap();
 
         /// Handle the player collision with walls first.
-        int eX = (int)Math.floor(((player.position.x + player.velocity.x)*2)/ Helpers.TILE);
-        int eY = (int)Math.floor(((player.position.y + player.velocity.y)*2)/ Helpers.TILE);
+        int eX = (int)Math.floor(((player.position.x + player.velocity.x))/ Helpers.TILE);
+        int eY = (int)Math.floor(((player.position.y + player.velocity.y))/ Helpers.TILE);
 
-        if(eX < map.length && eY < map[1].length && !map[eX][eY].walkable) {
+        if(eX >= 0 && eY >= 0 &&
+                eX < map.length && eY < map[1].length && !map[eX][eY].walkable) {
             // Work out direction to get back to safety
             player.velocity.x = 0;
             player.velocity.y = 0;
         }
 
         /// Now monsters and walls.
-        for (Element e : objects.monsters) {
-            if(!e.movable) continue;
+        for (Monster e : objects.monsters) {
             // Get position in the boolean representation of map.
-            eX = (int)Math.floor(((e.position.x + e.velocity.x)*2)/ Helpers.TILE);
-            eY = (int)Math.floor(((e.position.y + e.velocity.y)*2)/ Helpers.TILE);
+            eX = (int)Math.floor(((e.position.x + e.velocity.x))/ Helpers.TILE);
+            eY = (int)Math.floor(((e.position.y + e.velocity.y))/ Helpers.TILE);
 
-            if(eX < map.length && eY < map[1].length && !map[eX][eY].walkable) {
+            if(eX >= 0  && eY >= 0 &&
+                    eX < map.length && eY < map[1].length && !map[eX][eY].walkable) {
                 // Work out direction to get back to safety
-                e.velocity.x = 0;
-                e.velocity.y = 0;
+                //e.velocity.x = 0;
+                //e.velocity.y = 0;
+                e.orientation += PApplet.PI/4;
             }
         }
 

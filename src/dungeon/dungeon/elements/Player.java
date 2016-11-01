@@ -19,7 +19,7 @@ public class Player extends Character {
 
     private int gold;
     private List<Item> inventory = new LinkedList<>();
-    private float SPEED = 0.5f;
+    private float SPEED = 1f;
     private float MAX_SPEED = 2f;
     private float DAMPING = 0.998f;
 
@@ -30,35 +30,35 @@ public class Player extends Character {
     }
 
     public void render(PApplet p) {
-        p.pushMatrix();
-        p.translate(position.x, position.y);
-        p.rotate(rotation);
-        p.scale(scaleX, scaleY);
+        //p.pushMatrix();
+        //p.translate(position.x, position.y);
+        //p.rotate(rotation);
+        //p.scale(scaleX, scaleY);
 
         p.fill(123);
         p.ellipse(this.position.x, this.position.y, width, width);
 
-        p.popMatrix();
+        //p.popMatrix();
 
     }
 
     public void moveUp() {
-        this.velocity.y = -SPEED;
+        this.velocity.y += -SPEED;
 
     }
 
     public void moveDown() {
-        this.velocity.y = SPEED;
+        this.velocity.y += SPEED;
 
     }
 
     public void moveLeft() {
-        this.velocity.x = -SPEED;
+        this.velocity.x += -SPEED;
 
     }
 
     public void moveRight() {
-        this.velocity.x = SPEED;
+        this.velocity.x += SPEED;
 
     }
 
@@ -86,7 +86,7 @@ public class Player extends Character {
         velocity.mult(DAMPING); // Hack in the drag for now
 
 
-        if((position.y > p.height) || (position.y < 0)) velocity.y = -velocity.y; // We will actually do collision detect on particles with the ground, this is just a backup.
+        if((position.y > p.height) || (position.y < 0)) velocity.y = -velocity.y;
         if((position.x > p.width) || (position.x < 0)) velocity.x = -velocity.x;
 
     }

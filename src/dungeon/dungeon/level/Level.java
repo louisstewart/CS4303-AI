@@ -4,6 +4,7 @@ import dungeon.Helpers;
 import dungeon.dungeon.elements.*;
 import dungeon.dungeon.elements.Character;
 import processing.core.PApplet;
+import processing.core.PVector;
 
 import java.util.*;
 
@@ -31,8 +32,7 @@ public class Level {
 
         this.map = new Tile[width][height];
 
-        /*MapElement me = */generateLevelPartition();
-        //objects.add(me);
+        generateLevelPartition();
 
         populateLevel();
     }
@@ -60,8 +60,8 @@ public class Level {
 
     public void placePlayer(Player player) {
         Room start = rooms.get(0);
-        player.position.x = start.centerX() * (Helpers.TILE/2);
-        player.position.y = start.centerY() * (Helpers.TILE/2);
+        player.position.x = start.centerX() * (Helpers.TILE);
+        player.position.y = start.centerY() * (Helpers.TILE);
         System.out.printf("Room[0].centerX = %d, rooms[0].centerY = %d \n",start.centerX(), start.centerY());
         System.out.printf("Player at x: %f , y: %f \n", player.position.x, player.position.y);
     }
@@ -173,7 +173,7 @@ public class Level {
         // First put in the exit node.
         ExitNode e = null;
         // Select a random room that is not the same room as the player spawns in.
-        int room = (int)(1 + Math.random() * (rooms.size() - 1));
+        int room = rooms.size()-1;//(int)(1 + Math.random() * (rooms.size() - 1));
         Room r = rooms.get(room);
         int exitX = r.centerX() * Helpers.TILE; // Put in the center of the room.
         int exitY = r.centerY() * Helpers.TILE;
@@ -183,6 +183,39 @@ public class Level {
         objects.exit = e; // Add it to the scene to be rendered.
 
         int numMonsters = levelNumber < 5 ? 5 : levelNumber; // Some amount of monsters.
+
+        for (int i = 0; i < numMonsters; i++) {
+            room  = (int)(1 + Math.random() * (rooms.size() - 1));
+            r = rooms.get(room);
+            int x = (int)(r.x + Math.random() * (r.x2 - r.x));
+            int y = (int)(r.y + Math.random() * (r.y2 - r.y));
+
+            if(map[x][y].occupied) {
+                while(map[x][y].occupied) {
+                    x = (int)(r.x + Math.random() * (r.x2 - r.x));
+                    y = (int)(r.y + Math.random() * (r.y2 - r.y));
+                }
+                map[x][y].occupied = true;
+            }
+            // Position in the middle of a tile.
+            int mX = x * Helpers.TILE + Helpers.TILE/2;
+            int mY = y * Helpers.TILE + Helpers.TILE/2;
+
+            // 5% chance of a super strong monster
+            int strength, speed, health;
+            strength = speed = levelNumber;
+            health = levelNumber * 10;
+
+            if (Math.random() > 0.95) {
+                strength += 15;
+                speed += 15;
+                health += 20;
+            }
+            Monster m = new Monster(strength, speed, health);
+            m.position.x = mX;
+            m.position.y = mY;
+            objects.monsters.add(m);
+        }
     }
 
     /**

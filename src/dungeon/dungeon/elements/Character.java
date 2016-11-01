@@ -29,33 +29,6 @@ public abstract class Character extends Element {
         this.MAX_HEALTH = health;
     }
 
-    // update position, orientation, velocity and rotation
-    public void integrate(PVector targetPos, float angular) {
-        position.add(velocity);
-        // Apply an impulse to bounce off the edge of the screen
-        if ((position.x < 0) || (position.x > p.width)) velocity.x = -velocity.x;
-        if ((position.y < 0) || (position.y > p.height)) velocity.y = -velocity.y;
-
-        orientation += rotation;
-        if (orientation > PApplet.PI) orientation -= 2*PApplet.PI;
-        else if (orientation < -PApplet.PI) orientation += 2*PApplet.PI;
-
-        linear.x = targetPos.x - position.x;
-        linear.y = targetPos.y - position.y;
-
-        linear.normalize();
-        linear.mult(MAX_ACCEL);
-        velocity.add(linear);
-        if (velocity.mag() > MAX_SPEED) {
-            velocity.normalize();
-            velocity.mult(MAX_SPEED);
-        }
-
-        rotation += angular;
-        if (rotation > MAX_ROTATION) rotation = MAX_ROTATION;
-        else if (rotation  < -MAX_ROTATION) rotation = -MAX_ROTATION;
-    }
-
     /************************************************************************
      * MUTATORS
      ************************************************************************/

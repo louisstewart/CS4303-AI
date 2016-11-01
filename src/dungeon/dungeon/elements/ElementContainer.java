@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class ElementContainer extends Element {
 
-    public List<Character> monsters = new ArrayList<>();
+    public List<Monster> monsters = new ArrayList<>();
     public List<Item> items = new ArrayList<>();
     public Player player;
     public ExitNode exit;
@@ -18,26 +18,50 @@ public class ElementContainer extends Element {
 
     public void integrate(PApplet p) {
         player.integrate(p);
-        for (Element el: monsters) {
-            el.integrate(p);
+        for (Monster el: monsters) {
+            el.integrate(p, player.position);
         }
     }
 
     @Override
     public void render(PApplet p) {
-        p.pushMatrix();
-        p.translate(this.position.x, this.position.y);
-        p.rotate(rotation);
-        p.scale(scaleX, scaleY);
+        //p.pushMatrix();
+        //p.translate(this.position.x, this.position.y);
+        //p.rotate(rotation);
+        //p.scale(scaleX, scaleY);
         // Render immovables first.
         exit.render(p);
         for (Item i: items) {
             i.render(p);
         }
-        for (Element el : monsters) {
+        for (Monster el : monsters) {
             el.render(p);
         }
         player.render(p); // Render player last.
-        p.popMatrix();
+        //p.popMatrix();
+    }
+
+    public void moveUp() {
+        for (Monster m: monsters) {
+            m.moveUp();
+        }
+    }
+
+    public void moveDown() {
+        for (Monster m: monsters) {
+            m.moveDown();
+        }
+    }
+
+    public void moveLeft() {
+        for (Monster m: monsters) {
+            m.moveLeft();
+        }
+    }
+
+    public void moveRight() {
+        for (Monster m: monsters) {
+            m.moveRight();
+        }
     }
 }
