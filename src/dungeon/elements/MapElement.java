@@ -1,8 +1,7 @@
-package dungeon.dungeon.elements;
+package dungeon.elements;
 
-import dungeon.Helpers;
-import dungeon.dungeon.level.Level;
-import dungeon.dungeon.level.Tile;
+import dungeon.level.Level;
+import dungeon.level.Tile;
 import processing.core.PApplet;
 
 /**

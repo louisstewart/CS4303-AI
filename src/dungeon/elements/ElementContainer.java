@@ -1,4 +1,4 @@
-package dungeon.dungeon.elements;
+package dungeon.elements;
 
 import processing.core.PApplet;
 
@@ -39,29 +39,5 @@ public class ElementContainer extends Element {
         }
         player.render(p); // Render player last.
         //p.popMatrix();
-    }
-
-    public void moveUp() {
-        for (Monster m: monsters) {
-            m.moveUp();
-        }
-    }
-
-    public void moveDown() {
-        for (Monster m: monsters) {
-            m.moveDown();
-        }
-    }
-
-    public void moveLeft() {
-        for (Monster m: monsters) {
-            m.moveLeft();
-        }
-    }
-
-    public void moveRight() {
-        for (Monster m: monsters) {
-            m.moveRight();
-        }
     }
 }

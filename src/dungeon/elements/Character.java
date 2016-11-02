@@ -1,4 +1,4 @@
-package dungeon.dungeon.elements;
+package dungeon.elements;
 
 import processing.core.*;
 
@@ -13,19 +13,22 @@ public abstract class Character extends Element {
     private int strength; // Attack stat.
     private int dex; // Dexterity improves movement speed.
     private int health;
+    private int defence;
     private int MAX_HEALTH;
 
-    private PVector linear;
+    public PImage img;
+    public int width;
 
-    public Character(int strength, int dex, int health) {
+    public Character(PImage img, int strength, int dex, int health, int defence) {
+        this.img = img;
         this.position = new PVector(0, 0);
         this.orientation = 0;
         this.velocity = new PVector(0, 0);
         this.rotation = 0;
-        this.linear = new PVector(0, 0);
         this.strength = strength;
         this.dex = dex;
         this.health = health;
+        this.defence = defence;
         this.MAX_HEALTH = health;
     }
 
@@ -40,11 +43,17 @@ public abstract class Character extends Element {
 
     public void setMAX_HEALTH(int h) { this.MAX_HEALTH = h; }
 
-    public void incrementDex() { this.dex++; }
+    public void incrementDex(int amount) { this.dex+=amount; }
 
-    public void incrementStrength() { this.strength++; }
+    public void incrementStrength(int amount) { this.strength+=amount; }
 
-    public void incrementMaxHealth() { this.MAX_HEALTH++; }
+    public void incrementDefence(int amount) { this.defence+=amount; }
+
+    public void incrementMaxHealth(int amount) { this.MAX_HEALTH+=amount; }
+
+    public void incrementHealth(int amount) {
+        this.health = this.health+amount < this.MAX_HEALTH ? this.health+=amount : this.MAX_HEALTH;
+    }
 
     /************************************************************************
      * ACCESSORS
@@ -56,4 +65,8 @@ public abstract class Character extends Element {
     public int getStrength() { return this.strength;}
 
     public int getMAX_HEALTH() { return this.MAX_HEALTH; }
+
+    public int getDefence() { return defence; }
+
+
 }

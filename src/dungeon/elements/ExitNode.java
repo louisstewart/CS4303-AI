@@ -1,4 +1,4 @@
-package dungeon.dungeon.elements;
+package dungeon.elements;
 
 import dungeon.Helpers;
 import processing.core.PApplet;
@@ -12,10 +12,6 @@ public class ExitNode extends Element {
     private PImage img;
     public int width = Helpers.TILE;
     public int height = Helpers.TILE;
-
-    public ExitNode(PImage img) {
-        this.img = img;
-    }
 
     public ExitNode(PImage img, int x, int y) {
         this.img = img;

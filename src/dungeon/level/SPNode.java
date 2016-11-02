@@ -1,6 +1,4 @@
-package dungeon.dungeon.level;
-
-import java.util.List;
+package dungeon.level;
 
 /**
  * Created by Ls99

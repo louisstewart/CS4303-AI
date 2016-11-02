@@ -1,4 +1,4 @@
-package dungeon.dungeon.level;
+package dungeon.level;
 
 /**
  * Created by Louis on 27/10/2016.

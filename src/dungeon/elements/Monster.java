@@ -1,6 +1,8 @@
-package dungeon.dungeon.elements;
+package dungeon.elements;
 
+import dungeon.Helpers;
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PVector;
 
 /**
@@ -8,24 +10,34 @@ import processing.core.PVector;
  */
 public class Monster extends Character {
 
-    private enum AI {wandering, seeking, testing}
+    public String name;
+
+    private enum AI {wandering, seeking}
     private AI state;
 
     private float SPEED = 0.5f;
-    private float MAX_SPEED_WANDERING = 0.5f;
-    private float MAX_SPEED_SEEKING = 1f;
+    private float MAX_SPEED_WANDERING = 0.25f;
+    private float MAX_SPEED_SEEKING;
 
     private PVector linear ;
 
-    public Monster(int strength, int dex, int health) {
-        super(strength, dex, health);
+    public Monster(PImage img, String name, int strength, int dex, int health, int defence) {
+        super(img, strength, dex, health, defence);
         state = AI.wandering;
+        MAX_SPEED_SEEKING = dex/10.0f;
+        this.width = Helpers.TILE;
+        this.name = name;
     }
 
     @Override
     public void render(PApplet p) {
-        p.fill(255,0,0);
-        p.ellipse(position.x, position.y, 16, 16);
+        if(img != null) {
+            p.image(img, position.x, position.y);
+        }
+        else {
+            p.fill(255, 0, 0);
+            p.ellipse(position.x, position.y, 16, 16);
+        }
     }
 
 
@@ -84,25 +96,5 @@ public class Monster extends Character {
         }
         if((position.y > p.height) || (position.y < 0)) {velocity.y = -velocity.y; orientation +=PApplet.PI;}
         if((position.x > p.width) || (position.x < 0)) {velocity.x = -velocity.x; orientation +=PApplet.PI;}
-    }
-
-    public void moveUp() {
-        this.velocity.y += -SPEED;
-
-    }
-
-    public void moveDown() {
-        this.velocity.y += SPEED;
-
-    }
-
-    public void moveLeft() {
-        this.velocity.x += -SPEED;
-
-    }
-
-    public void moveRight() {
-        this.velocity.x += SPEED;
-
     }
 }

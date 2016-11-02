@@ -1,4 +1,4 @@
-package dungeon.dungeon.display;
+package dungeon.display;
 
 import dungeon.Helpers;
 import processing.core.PApplet;

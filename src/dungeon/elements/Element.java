@@ -1,4 +1,4 @@
-package dungeon.dungeon.elements;
+package dungeon.elements;
 
 import processing.core.PApplet;
 import processing.core.PVector;
