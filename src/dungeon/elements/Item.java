@@ -28,11 +28,11 @@ public class Item extends Element{
 
     public void render(PApplet p) {
         if(this.img != null) {
-            p.image(img, this.position.x, this.position.y);
+            p.image(img, position.x, position.y, width, width);
         }
         else {
             p.fill(255, 120, 120);
-            p.rect(this.position.x, this.position.y, Helpers.TILE, Helpers.TILE);
+            p.rect(position.x, position.y, width, width);
         }
     }
 
@@ -51,4 +51,23 @@ public class Item extends Element{
     public int getBonus() { return bonus; }
 
     public void setBonus(int bonus) { this.bonus = bonus; }
+
+    public String getBonusString() {
+        String rtn = "";
+        switch (attr) {
+            case STRENGTH:
+                rtn = "Strength";
+                break;
+            case DEFENCE:
+                rtn = "Defence";
+                break;
+            case DEXTERITY:
+                rtn = "Dexterity";
+                break;
+            case MAGIC:
+                rtn = "Magic";
+                break;
+        }
+        return rtn;
+    }
 }

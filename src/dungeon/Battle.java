@@ -37,47 +37,82 @@ public class Battle {
                     playerDefend = true;
                     state = BS.enemyTurn;
                     message = "You put up your shield";
-                    timer = System.currentTimeMillis()+2500;
+                    timer = System.currentTimeMillis()+2000;
                     return;
                 case 'a': // A for attack.
                     // 99% chance of attack.
                     if(Math.random() >= 0.99f) {
                         message = "Your attack missed...";
                         state = BS.enemyTurn;
-                        timer = System.currentTimeMillis()+2500;
+                        timer = System.currentTimeMillis()+2000;
                         return;
                     }
                     damage = player.getStrength();
                     break;
-                case 'm':
+                case 'm': // Magic attack
                     if(player.getMagic() > 0 && player.hasWand()) {
-                        damage = player.getMagic();
-                        player.decrementMagic(5);
+                        damage = player.getMagic()/2; // Attack strength is half of Magic points.
+                        player.decrementMagic(damage/2);
                         break;
                     }
                     else {
                         this.message = "Not enough MP to attack.. Try something else!";
-                        timer = System.currentTimeMillis()+2500;
+                        timer = System.currentTimeMillis()+2000;
+                        return;
+                    }
+                case 'h': // Heal using half of remaining magic.
+                    if(player.getMagic() > 0) {
+                        // Get half of magic.
+                        int heal = player.getMagic() /2 ;
+                        player.incrementHealth(heal);
+                        player.decrementMagic(heal);
+                        this.message = "Healed by "+heal+" HP!";
+                        timer = System.currentTimeMillis()+2000;
+                        state = BS.enemyTurn;
+                        return; // Break out of this method because we didn't hit enemy.
+                    }
+                    else {
+                        this.message = "Not enough MP to heal.. Try something else!";
+                        timer = System.currentTimeMillis()+2000;
+                        return; // Nothing happened so break out and let user try again.
+                    }
+                case 'p': // Use a potion to heal.
+                    int heal = player.usePotion();
+                    if(heal > 0) {
+                        this.message = "Healed by " + heal + " HP!";
+                        timer = System.currentTimeMillis() + 2000;
+                        state = BS.enemyTurn;
+                        return; // Same as above.
+                    }
+                    else if(heal == 0) {
+                        this.message = "Full health already! Try again..";
+                        timer = System.currentTimeMillis() + 2000;
+                        return;
+                    }
+                    else {
+                        this.message = "No potions left! Try again..";
+                        timer = System.currentTimeMillis() + 2000;
                         return;
                     }
             }
+            // Calculate the damage done - If we hit the monster anyway.
             if(enemyDefend) {
                 damage = monster.getDefence() >= damage ? 0 : damage - monster.getDefence();
             }
-            int nh = monster.getHealth() - damage;
+            int nh = monster.getHealth() - damage; // Calculate monster's new health.
             nh = nh <= 0 ? 0 : nh;
-            monster.setHealth(nh);
-            message = "Hit the enemy for "+damage+" damage!";
+            monster.setHealth(nh); // Update monster
+            message = "Hit the enemy for "+damage+" damage!"; // Write a message
             if(monster.getHealth() == 0) {
-                state = BS.won;
+                state = BS.won; // We won!
                 // Add in the spoils to the user.
                 player.setGold(player.getGold()+getBonusGold());
                 player.setExp(player.getExp()+getBonusExp());
             }
             else {
-                state = BS.enemyTurn;
+                state = BS.enemyTurn; // Their turn now.
             }
-            timer = System.currentTimeMillis()+2500;
+            timer = System.currentTimeMillis()+2000;
         }
 
     }
@@ -133,21 +168,25 @@ public class Battle {
             p.text("You encountered a "+ monster.name, 50,100);
         }
         if(state == BS.yourTurn) {
-            p.text("Your turn!", 50, 280);
+            p.text("Your turn!", 50, 340);
         }
         if(state == BS.enemyTurn) {
-            p.text("Enemy turn!", 50, 280);
+            p.text("Enemy turn!", 50, 340);
         }
         p.text("Actions: ", 50, 130);
         p.text("A - Attack", 80, 160);
         if(player.hasWand()) {
-            p.text("M - Magic", 80, 190);
+            p.text("M - Magic Attack", 80, 190);
             p.text("D - Defend", 80, 220);
-            p.text("Select an action...", 50, 250);
+            p.text("H - Healing spell", 80, 250);
+            p.text("P - Use potion", 80, 280);
+            p.text("Select an action...", 50, 310);
         }
         else {
             p.text("D - Defend", 80, 190);
-            p.text("Select an action...", 50, 220);
+            p.text("H - Healing spell", 80, 220);
+            p.text("P - Use potion", 80, 250);
+            p.text("Select an action...", 50, 280);
         }
 
 
@@ -156,7 +195,7 @@ public class Battle {
         p.textAlign(PApplet.LEFT);
         // Draw MP and HP
         p.text("Your HP: "+player.getHealth()+"/"+player.getMAX_HEALTH(), 450, 100);
-        p.text("Your MP: "+player.getMagic()+"/"+player.getMax_magic(), 670, 100);
+        p.text("Your MP: "+player.getMagic()+"/"+player.getMAX_MAGIC(), 670, 100);
         p.text("Enemy HP: "+monster.getHealth()+"/"+monster.getMAX_HEALTH(), 450, 200);
 
         p.stroke(0);
@@ -177,7 +216,7 @@ public class Battle {
 
         // Magic bar
         p.fill(142,210,105);
-        hpercent = (player.getMagic()+0.0f) / (player.getMax_magic()+0.0f);
+        hpercent = (player.getMagic()+0.0f) / (player.getMAX_MAGIC()+0.0f);
         bp = (int) (200 * hpercent);
         p.rect(673, 123, bp, 20);
 

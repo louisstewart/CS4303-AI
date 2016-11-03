@@ -12,7 +12,7 @@ public class SPNode {
     public SPNode left = null;
     public SPNode right = null;
 
-    private final int MIN_LEAF_SIZE = 8; // 32 tiles wide map, 15 tiles high.
+    private final int MIN_LEAF_SIZE = 9; // A heuristic value found by experimentation
     private Room r = null;
 
 

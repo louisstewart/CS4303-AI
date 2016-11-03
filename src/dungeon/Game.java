@@ -6,7 +6,6 @@ import dungeon.elements.Character;
 import dungeon.level.Level;
 import dungeon.level.Tile;
 import processing.core.PApplet;
-import processing.core.PConstants;
 import processing.core.PVector;
 
 import java.util.List;
@@ -55,6 +54,7 @@ public class Game {
                     level.placePlayer();
                     player.incrementMaxHealth(10);
                     player.incrementHealth(10);
+                    player.incrementStrength(2);
                     player.incrementMaxMagic(5);
                     player.incrementMagic(5);
                     objects.player = player;
@@ -176,9 +176,12 @@ public class Game {
                     else state = GameState.inventory;
                     break;
                 case 'a':
+                    if(state == GameState.inventory) player.usePotion();
+                case 'h':
+                case 'p':
                 case 'm':
                 case 'd':
-                    if(b != null) b.doBattle(p.key);
+                    if(b != null && state == GameState.battle) b.doBattle(p.key);
                     break;
             }
         }
@@ -343,7 +346,7 @@ public class Game {
             p.textSize(12);
             p.text(i.getStats(), xp, yp);
             yp += 20;
-            p.text("Boost bonus: "+i.getBonus(), xp, yp);
+            p.text(i.getBonusString()+" bonus: "+i.getBonus(), xp, yp);
             yp+=45;
         }
 
@@ -364,8 +367,8 @@ public class Game {
         p.fill(255);
         p.textSize(15);
         xp = p.width-280;
-        p.text("HP:", xp, 90);
-        p.text("MP:", xp, 180);
+        p.text("HP: "+player.getHealth()+"/"+ player.getMAX_HEALTH(), xp, 90);
+        p.text("MP: "+player.getMagic()+"/"+player.getMAX_MAGIC(), xp, 180);
 
         p.stroke(0);
         p.fill(123);
@@ -382,7 +385,7 @@ public class Game {
 
         // Magic bar
         p.fill(142,210,105);
-        hpercent = (player.getMagic()+0.0f) / (player.getMax_magic()+0.0f);
+        hpercent = (player.getMagic()+0.0f) / (player.getMAX_MAGIC()+0.0f);
         bp = (int) (200 * hpercent);
         p.rect(xp+3, 203, bp, 20);
     }

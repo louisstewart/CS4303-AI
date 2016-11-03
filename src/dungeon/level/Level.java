@@ -218,29 +218,31 @@ public class Level {
                     x = (int)(r.x + Math.random() * (r.x2 - r.x));
                     y = (int)(r.y + Math.random() * (r.y2 - r.y));
                     if(x-1>=0 && x+1<map.length && y-1>=0 && y+1 < map[1].length) {
-                        if(!map[x-1][y].occupied && !map[x+1][y].occupied && !map[x][y-1].occupied && !map[x][y+1].occupied) {
+                        if(!map[x-1][y].occupied && !map[x+1][y].occupied && !map[x][y-1].occupied
+                                && !map[x][y+1].occupied && !map[x][y].occupied) {
                             tryAgain = false;
                         }
                     }
                 }
-                map[x][y].occupied = true;
             }
+            map[x][y].occupied = true;
             // Position in a tile.
             int mX = x * Helpers.TILE;
             int mY = y * Helpers.TILE;
 
             // 5% chance of a super strong monster
             int strength, speed, health, defence;
-            strength = speed = levelNumber+5;
-            health =  10 + levelNumber*2;
-            defence = levelNumber;
+            strength = speed = 2*levelNumber+5;
+            health =  10*levelNumber - 2;
+            defence = 2*levelNumber;
             PImage img = GameScreen.monster;
             String name = "Baby Dragon";
 
             if (Math.random() > 0.95) {
-                strength += 5*levelNumber;
+                strength += 1.25*levelNumber;
                 speed += 15;
                 health += 20;
+                defence += 2*levelNumber;
                 img = GameScreen.monsterHard;
                 name = "Malicious Mage";
             }
@@ -265,8 +267,9 @@ public class Level {
                     x = (int)(r.x + Math.random() * (r.x2 - r.x));
                     y = (int)(r.y + Math.random() * (r.y2 - r.y));
                 }
-                map[x][y].occupied = true;
             }
+            map[x][y].occupied = true;
+
             Item wand = new Item(GameScreen.wand, "Golden Wand of Rah", "Makes things go poof and suchlike..", Attribute.MAGIC, 10);
             wand.position.x = x * Helpers.TILE;
             wand.position.y = y * Helpers.TILE;
@@ -289,28 +292,34 @@ public class Level {
                 map[x][y].occupied = true;
             }
 
-            // 50% chance of dropping a potion.
-            Item item = new Item(GameScreen.potion, "Potion", "Heals you up a bit", Attribute.HEALTH, 5*levelNumber);
+
+            Item item = null;
 
             double chance = Math.random();
-            if(chance >= 0.5 && chance < 0.85) {
+            if(chance <= 0.35) {
+                // 35% chance of dropping a potion.
+                item = new Item(GameScreen.potion, "Potion", "Heals you up a bit", Attribute.HEALTH, 2*levelNumber+10);
+            }
+            else if(chance >= 0.5 && chance < 0.85) {
                 // GOLD GOLD GOLD.
                 int amount = (int)(levelNumber + Math.random() * (levelNumber*100 - levelNumber));
                 item = new Item(GameScreen.chest, "Gold", "Bit of cash", Attribute.GOLD, amount*5);
             }
             else if(chance >= 0.9 && chance < 0.93333) {
-                item = new Item(GameScreen.boots, "Speedy Boots", "Bit of extra speed", Attribute.DEXTERITY, 2*levelNumber);
+                item = new Item(GameScreen.boots, "Speedy Boots", "Bit of extra speed", Attribute.DEXTERITY, 3*levelNumber);
             }
             else if(chance >= 0.93 && chance < 0.96666) {
                 item = new Item(GameScreen.armour, "Shiny Armour", "Take some hits", Attribute.DEFENCE, 3*levelNumber);
             }
             else if(chance >= 0.96) {
                 // Drop a weapon
-                item = new Item(GameScreen.sword, "Sharp sword", "Cut 'em down", Attribute.STRENGTH, 6*levelNumber);
+                item = new Item(GameScreen.sword, "Sharp sword", "Cut 'em down", Attribute.STRENGTH, 3*levelNumber);
             }
-            item.position.x = x * Helpers.TILE;
-            item.position.y = y * Helpers.TILE;
-            objects.items.add(item);
+            if(item != null) {
+                item.position.x = x * Helpers.TILE;
+                item.position.y = y * Helpers.TILE;
+                objects.items.add(item);
+            }
         }
     }
 

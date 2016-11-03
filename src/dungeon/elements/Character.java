@@ -10,11 +10,11 @@ public abstract class Character extends Element {
     protected PApplet p; // The parent application - stores all of the processing methods and variables.
 
     // Character Attributes - both NPC and player share these
-    private int strength; // Attack stat.
-    private int dex; // Dexterity improves movement speed.
-    private int health;
-    private int defence;
-    private int MAX_HEALTH;
+    protected int strength; // Attack stat.
+    protected int dex; // Dexterity improves movement speed.
+    protected int health;
+    protected int defence;
+    protected int MAX_HEALTH;
 
     public PImage img;
     public int width;

@@ -32,7 +32,7 @@ public class Monster extends Character {
     @Override
     public void render(PApplet p) {
         if(img != null) {
-            p.image(img, position.x, position.y);
+            p.image(img, position.x, position.y, width, width);
         }
         else {
             p.fill(255, 0, 0);

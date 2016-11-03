@@ -6,7 +6,6 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ public class Player extends Character {
     private int gold;
     private int exp;
     private int score;
-    private int max_magic;
+    private int MAX_MAGIC;
     private boolean wand;
 
     public List<Item> potions = new ArrayList<>();
@@ -32,7 +31,7 @@ public class Player extends Character {
     public Player(PImage img, int strength, int dex, int health, int defence, int magic) {
         super(img, strength, dex, health, defence);
         this.magic = magic;
-        this.max_magic = magic;
+        this.MAX_MAGIC = magic;
         this.movable = true;
         this.exp = 0;
         this.width = Helpers.TILE;
@@ -45,11 +44,11 @@ public class Player extends Character {
         //p.scale(scaleX, scaleY);
 
         if(this.img != null) {
-            p.image(img, this.position.x, this.position.y);
+            p.image(img, position.x, position.y, width, width);
         }
         else {
             p.fill(123);
-            p.ellipse(this.position.x, this.position.y, width, width);
+            p.ellipse(position.x, position.y, width, width);
         }
         //p.popMatrix();
 
@@ -109,9 +108,25 @@ public class Player extends Character {
 
     }
 
+    public int usePotion() {
+        int heal = 0;
+        if(health == MAX_HEALTH)  return 0;
+        if (potions.size() > 0 && health < MAX_HEALTH) {
+            Item p = potions.get(0);
+            potions.remove(p);
+            heal = health + p.getBonus() > MAX_HEALTH ? MAX_HEALTH-health : p.getBonus(); // Work out how much healed by
+            health = health + p.getBonus() > MAX_HEALTH ? MAX_HEALTH : health + p.getBonus(); // Set health
+            return heal;
+        }
+        else {
+            return -1;
+        }
+
+    }
+
     public int getMagic() { return magic; }
 
-    public void incrementMagic(int magic) { this.magic = this.magic + magic > max_magic ? max_magic : this.magic + magic; }
+    public void incrementMagic(int magic) { this.magic = this.magic + magic > MAX_MAGIC ? MAX_MAGIC : this.magic + magic; }
 
     public void decrementMagic(int magic) { this.magic = this.magic - magic < 0 ? 0 : this.magic - magic; }
 
@@ -129,9 +144,9 @@ public class Player extends Character {
 
     public void giveWand() { this.wand = true; }
 
-    public int getMax_magic() { return max_magic; }
+    public int getMAX_MAGIC() { return MAX_MAGIC; }
 
-    public void incrementMaxMagic(int max_magic) { this.max_magic += max_magic; }
+    public void incrementMaxMagic(int max_magic) { this.MAX_MAGIC += max_magic; }
 
     /**
      * Return the player score. A function of gold, experience, and items.
