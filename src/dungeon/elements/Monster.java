@@ -65,6 +65,9 @@ public class Monster extends Character {
 
             position.add(velocity) ;
 
+            if ((position.x < 0) || (position.x > p.width)) velocity.x = -velocity.x ;
+            if ((position.y < 0) || (position.y > p.height)) velocity.y = -velocity.y ;
+
             // randomly update orientation a little
             orientation += p.random(0, PApplet.PI/64) - p.random(0, PApplet.PI/64) ;
 

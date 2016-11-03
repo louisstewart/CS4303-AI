@@ -44,6 +44,12 @@ public class Game {
         state = GameState.startGame;
     }
 
+    /**
+     * Do the actions.
+     *
+     * Depending on game state, this will either be updating positions,
+     * or making a battle turn.
+     */
     public void tick() {
         switch(state) {
             case levelOver:
@@ -56,17 +62,17 @@ public class Game {
                     player.incrementHealth(10);
                     player.incrementStrength(2);
                     player.incrementMaxMagic(5);
-                    player.incrementMagic(5);
+                    player.incrementMagic(player.getMAX_MAGIC());
                     objects.player = player;
                     state = GameState.exploring;
                 }
                 break;
             case exploring:
                 detectCollisions(); // Detect all the collisions.
-                objects.integrate(p);
+                objects.integrate(p); // Update positions.
                 break;
             case battle:
-                b.tick();
+                b.tick(); // Run enemy side of battle.
                 break;
             case pickup:
             case battleWon:
@@ -138,6 +144,11 @@ public class Game {
         }
     }
 
+    /**
+     * Handle movement and other actions.
+     *
+     * All based on what state of the game we're in.
+     */
     public void keyPressed() {
         if(p.key == PApplet.CODED) {
             if(state == GameState.exploring) {
@@ -224,26 +235,37 @@ public class Game {
                 b = new Battle(this, player, m);
                 return;
             }
+
+            // Attack vector.
             PVector pd = new PVector(player.position.x - m.position.x, player.position.y - m.position.y);
+            // Angle of approach of player to monster.
             float angle = PApplet.atan2(pd.y, pd.x);
 
+            /*
+             * If the player is approaching the monster but is not in its field of view
+             * then the monster will not transition to seeker mode.
+             *
+             * This allows the player to sneak around the back of monsters.
+             */
             if( m.orientation - PApplet.PI/4 <= angle && angle < m.orientation + PApplet.PI/4 ) {
                 if(pd.mag() < 4 * Helpers.TILE) m.setSeek();
             }
+            // Player is too far from monster, so transition to wandering.
             if(pd.mag() > 6 * Helpers.TILE) m.setWander();
         }
 
+        // Did the user pickup an item?
         pickup = null;
         for (Item i : objects.items) {
             if(player.position.x < i.position.x+i.width && player.position.x + player.width > i.position.x &&
                     player.position.y < i.position.y + i.width &&
                     player.width + player.position.y > i.position.y) {
                 state = GameState.pickup;
-                timer = System.currentTimeMillis()+ 2000;
+                timer = System.currentTimeMillis()+ 2000; // Display pickup message for 2s.
                 pickup = i;
             }
         }
-        if(pickup != null) {
+        if(pickup != null) { // What did we pick up?
             // Increase player attribute by pickup amount
             switch (pickup.getAttr()) {
                 case STRENGTH:
@@ -283,6 +305,9 @@ public class Game {
         }
     }
 
+    /*
+     * Check if a character is colliding with a piece of terrain.
+     */
     private void checkCollisionAgainstTerrain(Character c, Tile[][] map, int w, int h, boolean seeking) {
         int eX = (int)Math.floor(((c.position.x + c.velocity.x ))/ Helpers.TILE);
         int eY = (int)Math.floor(((c.position.y + c.velocity.y ))/ Helpers.TILE);
@@ -304,6 +329,9 @@ public class Game {
         }
     }
 
+    /******************************************************************************
+     *  Rendering methods for various game screens.
+     */
     private void renderStatsBar() {
         int barY = p.height - GameScreen.PANEL_HEIGHT; // Top of the bar
         barY += 30; // text height on bar.
@@ -382,6 +410,9 @@ public class Game {
         p.rect(xp, 120, 206, 26); // Health bar
         p.rect(xp, 200, 206, 26); // Magic bar
 
+        p.fill(255);
+        p.textSize(20);
+        p.text("Player level: "+player.getLevel(), xp, 370);
         p.image(player.img, xp, 400, 100, 100);
 
 
@@ -418,6 +449,9 @@ public class Game {
         p.text("START GAME", p.width/2, yp);
         p.textSize(40);
         p.text("Press Enter to start", p.width/2, yp+70);
+        p.textSize(20);
+        p.text("Move: WASD", p.width/2, yp+110);
+        p.text("Inventory: I", p.width/2, yp+140);
     }
 
     private void renderNextLevel() {

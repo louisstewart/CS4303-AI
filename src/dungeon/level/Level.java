@@ -282,7 +282,7 @@ public class Level {
         }
 
         for (int i = 0; i < drops; i++) {
-            // 50% chance of potion, 40% chance of gold, 3.33% dexterity booster, 3.33% armour, 3.33% weapon
+            // 35% chance of potion, 35% chance of gold, 3.33% dexterity booster, 3.33% armour, 3.33% weapon
             room  = (int)(1 + Math.random() * (rooms.size() - 1));
             r = rooms.get(room);
             int x = (int)(r.x + Math.random() * (r.x2 - r.x));

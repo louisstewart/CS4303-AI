@@ -19,6 +19,7 @@ public class Player extends Character {
     private int score;
     private int MAX_MAGIC;
     private boolean wand;
+    private int level;
 
     public List<Item> potions = new ArrayList<>();
     public Item shield;
@@ -35,6 +36,7 @@ public class Player extends Character {
         this.movable = true;
         this.exp = 0;
         this.width = Helpers.TILE-3;
+        this.level = 1;
     }
 
     public void render(PApplet p) {
@@ -137,11 +139,32 @@ public class Player extends Character {
 
     public int getExp() { return exp; }
 
-    public void setExp(int exp) { this.exp = exp; }
+    public void setExp(int exp) {
+        this.exp = exp;
+        while(exp > Math.pow(2, level)) {
+            level++;
+            // Increment random stat.
+            double r = Math.random();
+            if(r < 0.25) {
+                incrementHealth(level);
+            }
+            else if(r >= 0.25 && r < 0.5) {
+                incrementMagic(level);
+            }
+            else if(r >= 0.5 && r < 0.75) {
+                incrementStrength(level);
+            }
+            else if(r >= 0.75) {
+                incrementDefence(level);
+            }
+        }
+    }
 
     public boolean hasWand(){ return this.wand; }
 
     public void giveWand() { this.wand = true; }
+
+    public int getLevel() { return this.level; }
 
     public int getMAX_MAGIC() { return MAX_MAGIC; }
 
@@ -154,7 +177,7 @@ public class Player extends Character {
     public int getScore(int currentlevel) {
         int score = 0;
         score += 10 * inventorySize();
-        score += gold + exp * potions.size() + currentlevel * 10;
+        score += gold + exp * level + potions.size() + currentlevel * 10;
         return score;
     }
 
