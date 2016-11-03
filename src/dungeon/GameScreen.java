@@ -13,10 +13,7 @@ public class GameScreen extends PApplet {
 
     protected int sWidth = Helpers.WIDTH;
     protected int sHeight = Helpers.HEIGHT;
-    protected int tileSize = Helpers.TILE;
     protected int SCALE = Helpers.SCALE;
-
-    Logger logger = Logger.getLogger(GameScreen.class.getName());
 
     public static final int PANEL_HEIGHT = 50;
     public static PImage player;
@@ -53,19 +50,11 @@ public class GameScreen extends PApplet {
     public void setup() {
         background(121, 76, 19);
 
-        try {
-            FileHandler fh = new FileHandler("Game.log");
-            logger.addHandler(fh);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
         player = loadImage("player.png");
         monster = loadImage("monster.png");
         monsterHard = loadImage("monster-hard.png");
         ground = loadImage("ground.png");
-        PImage [] w = {loadImage("wall.png"), loadImage("wall1.png")};
-        wall = w;
+        wall = new PImage[]{loadImage("wall.png"), loadImage("wall1.png")};
         exit = loadImage("exitportal.png");
         boots = loadImage("dexboots.png");
         sword = loadImage("sword.png");

@@ -29,7 +29,7 @@ public class Game {
     public Game(PApplet p) {
         this.p = p;
         this.objects = new ElementContainer();
-        //this.camera = new Camera(p);
+        this.camera = new Camera(p);
         this.player = new Player(GameScreen.player, 10, 10, 10, 20, 10);
         this.level = new Level(currentLevel, objects, player);
         //this.map = new MapElement(level);
@@ -112,9 +112,9 @@ public class Game {
                 //camera.begin();
                 level.render(p);
                 objects.render(p);
-                renderStatsBar();
                 if (state == GameState.pickup) renderPickupBox();
                 //camera.end();
+                renderStatsBar();
                 break;
         }
     }
@@ -169,12 +169,11 @@ public class Game {
                     }
                 case PApplet.ENTER:
                 case PApplet.RETURN:
-                    state = GameState.exploring;
+                    if(state == GameState.startGame) state = GameState.exploring;
                     break;
                 case 'i':
-                    if(state == GameState.inventory) state = GameState.exploring;
-                    else state = GameState.inventory;
-                    break;
+                    if(state == GameState.inventory) {state = GameState.exploring; break;}
+                    if(state == GameState.exploring) {state = GameState.inventory; break;}
                 case 'a':
                     if(state == GameState.inventory) player.usePotion();
                 case 'h':
@@ -193,12 +192,13 @@ public class Game {
         int h = map[1].length;
 
         /// Handle the player collision with walls first.
-        checkCollisionAgainstTerrain(player, map, w, h);
+        checkCollisionAgainstTerrain(player, map, w, h, false);
 
         /// Now monsters and walls / Monster and player.
-        for (Monster e : objects.monsters) {
+        for (Monster m : objects.monsters) {
             // Get position in the boolean representation of map.
-            checkCollisionAgainstTerrain(e, map, w, h);
+            boolean seeking = m.getSeek();
+            checkCollisionAgainstTerrain(m, map, w, h, seeking);
         }
 
         // Monster on monster - monsters can walk over items, so we will ignore this case.
@@ -224,6 +224,13 @@ public class Game {
                 b = new Battle(this, player, m);
                 return;
             }
+            PVector pd = new PVector(player.position.x - m.position.x, player.position.y - m.position.y);
+            float angle = PApplet.atan2(pd.y, pd.x);
+
+            if( m.orientation - PApplet.PI/4 <= angle && angle < m.orientation + PApplet.PI/4 ) {
+                if(pd.mag() < 4 * Helpers.TILE) m.setSeek();
+            }
+            if(pd.mag() > 6 * Helpers.TILE) m.setWander();
         }
 
         pickup = null;
@@ -276,7 +283,7 @@ public class Game {
         }
     }
 
-    private void checkCollisionAgainstTerrain(Character c, Tile[][] map, int w, int h) {
+    private void checkCollisionAgainstTerrain(Character c, Tile[][] map, int w, int h, boolean seeking) {
         int eX = (int)Math.floor(((c.position.x + c.velocity.x ))/ Helpers.TILE);
         int eY = (int)Math.floor(((c.position.y + c.velocity.y ))/ Helpers.TILE);
         int neX = (int)Math.floor(((c.position.x + c.velocity.x + c.width))/ Helpers.TILE);
@@ -286,7 +293,7 @@ public class Game {
                 && eX < w && eY < h && neX < w && neY < h
                 && (!map[eX][eY].walkable || !map[neX][neY].walkable || !map[eX][neY].walkable || !map[neX][eY].walkable)) {
             // Work out direction to get back to safety
-            if(c.getClass() == Monster.class) {
+            if(c.getClass() == Monster.class && !seeking) {
                 c.orientation += PApplet.PI/4;
             }
             else {

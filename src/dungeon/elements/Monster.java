@@ -19,13 +19,13 @@ public class Monster extends Character {
     private float MAX_SPEED_WANDERING = 0.25f;
     private float MAX_SPEED_SEEKING;
 
-    private PVector linear ;
+    private PVector linear = new PVector(0,0);
 
     public Monster(PImage img, String name, int strength, int dex, int health, int defence) {
         super(img, strength, dex, health, defence);
         state = AI.wandering;
         MAX_SPEED_SEEKING = dex/10.0f;
-        this.width = Helpers.TILE;
+        this.width = Helpers.TILE - 3;
         this.name = name;
     }
 
@@ -33,6 +33,11 @@ public class Monster extends Character {
     public void render(PApplet p) {
         if(img != null) {
             p.image(img, position.x, position.y, width, width);
+            // Draw their orientation in.
+            int newxe = (int)(position.x+width/2 + (width/2) * PApplet.cos(orientation)) ;
+            int newye = (int)(position.y+width/2 + (width/2) * PApplet.sin(orientation)) ;
+            p.fill(255);
+            p.ellipse(newxe, newye, 10, 10) ;
         }
         else {
             p.fill(255, 0, 0);
@@ -40,6 +45,17 @@ public class Monster extends Character {
         }
     }
 
+    public void setSeek() {
+        state = AI.seeking;
+    }
+
+    public boolean getSeek() {
+        return state == AI.seeking;
+    }
+
+    public void setWander() {
+        state = AI.wandering;
+    }
 
     public void integrate(PApplet p, PVector targetPos) {
         if(state == AI.wandering) {
@@ -58,12 +74,12 @@ public class Monster extends Character {
         }
         else if(state == AI.seeking) {
             float angular = 0;
-            position.add(velocity) ;
+            position.add(velocity);
             // Apply an impulse to bounce off the edge of the screen
             if ((position.x < 0) || (position.x > p.width)) velocity.x = -velocity.x ;
             if ((position.y < 0) || (position.y > p.height)) velocity.y = -velocity.y ;
 
-            orientation += rotation ;
+            orientation = PApplet.atan2(velocity.y, velocity.x);
             if (orientation > PApplet.PI) orientation -= 2*PApplet.PI ;
             else if (orientation < -PApplet.PI) orientation += 2*PApplet.PI ;
 

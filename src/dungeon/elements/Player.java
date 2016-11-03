@@ -34,7 +34,7 @@ public class Player extends Character {
         this.MAX_MAGIC = magic;
         this.movable = true;
         this.exp = 0;
-        this.width = Helpers.TILE;
+        this.width = Helpers.TILE-3;
     }
 
     public void render(PApplet p) {
@@ -51,7 +51,6 @@ public class Player extends Character {
             p.ellipse(position.x, position.y, width, width);
         }
         //p.popMatrix();
-
     }
 
     public void moveUp() {

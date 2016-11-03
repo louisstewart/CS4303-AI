@@ -12,6 +12,8 @@ public class Room {
     private int width;
     private int height;
 
+    public int numMonsters;
+
     public Room(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
@@ -19,6 +21,7 @@ public class Room {
         this.y2 = y + height -1;
         this.width = width;
         this.height = height;
+        numMonsters = 0;
     }
 
     public int centerX() {

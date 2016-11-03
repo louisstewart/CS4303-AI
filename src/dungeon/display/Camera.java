@@ -5,10 +5,10 @@ import processing.core.PApplet;
 
 public class Camera {
 
-    public static final float SCALE = Helpers.SCALE;
+    public static final float SCALE = Helpers.SCALE/2;
 
-    static final int ROOM_WIDTH_IN_TILES = 16;
-    static final int ROOM_HEIGHT_IN_TILES = 11;
+    static final int ROOM_WIDTH_IN_TILES = 10;
+    static final int ROOM_HEIGHT_IN_TILES = 7;
     static final int TILE = Helpers.TILE;
 
     public float x, y;

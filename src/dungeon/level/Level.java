@@ -38,6 +38,7 @@ public class Level {
     }
 
     public void render(PApplet p) {
+
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 int x = i* Helpers.TILE;
@@ -206,19 +207,20 @@ public class Level {
 
         int numMonsters = levelNumber < 5 ? 5 : levelNumber; // Some amount of monsters.
 
+        room = 1;
         for (int i = 0; i < numMonsters; i++) {
-            room  = (int)(1 + Math.random() * (rooms.size() - 1));
+            room = (int)(1 + Math.random() * (rooms.size() - 1));
             r = rooms.get(room);
-            int x = (int)(r.x + Math.random() * (r.x2 - r.x));
-            int y = (int)(r.y + Math.random() * (r.y2 - r.y));
+            int x = (int)(r.x + 1 + Math.random() * (r.x2 - r.x - 2));
+            int y = (int)(r.y + 1 + Math.random() * (r.y2 - r.y - 2));
 
             boolean tryAgain = true;
             if(map[x][y].occupied) {
                 while(map[x][y].occupied || tryAgain) {
-                    x = (int)(r.x + Math.random() * (r.x2 - r.x));
-                    y = (int)(r.y + Math.random() * (r.y2 - r.y));
+                    x = (int)(r.x + Math.random() * (r.x2 - r.x - 2));
+                    y = (int)(r.y + Math.random() * (r.y2 - r.y - 2));
                     if(x-1>=0 && x+1<map.length && y-1>=0 && y+1 < map[1].length) {
-                        if(!map[x-1][y].occupied && !map[x+1][y].occupied && !map[x][y-1].occupied
+                        if((!map[x-1][y].occupied) && !map[x+1][y].occupied && !map[x][y-1].occupied
                                 && !map[x][y+1].occupied && !map[x][y].occupied) {
                             tryAgain = false;
                         }
@@ -226,13 +228,15 @@ public class Level {
                 }
             }
             map[x][y].occupied = true;
+
             // Position in a tile.
             int mX = x * Helpers.TILE;
             int mY = y * Helpers.TILE;
 
             // 5% chance of a super strong monster
             int strength, speed, health, defence;
-            strength = speed = 2*levelNumber+5;
+            strength = 2*levelNumber+5;
+            speed = 10;
             health =  10*levelNumber - 2;
             defence = 2*levelNumber;
             PImage img = GameScreen.monster;
@@ -240,7 +244,7 @@ public class Level {
 
             if (Math.random() > 0.95) {
                 strength += 1.25*levelNumber;
-                speed += 15;
+                speed += 2;
                 health += 20;
                 defence += 2*levelNumber;
                 img = GameScreen.monsterHard;
