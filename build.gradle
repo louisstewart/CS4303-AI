@@ -21,10 +21,6 @@ dependencies {
 
 }
 
-task listJars << {
-    configurations.compile.each { File file -> println file.name }
-}
-
 run {
 
     standardInput = System.in
